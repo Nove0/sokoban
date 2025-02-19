@@ -1,0 +1,5 @@
+Board_size: 8
+Player_starting_index: 3 3
+Boxes_indexes: 6 3 , 6 4
+Targets_indexes: 6 5
+Wall_indexes: 6 2

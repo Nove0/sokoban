@@ -1,0 +1,7 @@
+In the terminal (with g++), navigate to the app directory,
+To build run the commend:
+
+g++ Game.cpp Main.cpp -o app -lsfml-graphics -lsfml-window -lsfml-system
+
+And run with the commend:
+./app

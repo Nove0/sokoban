@@ -1,0 +1,7 @@
+In the terminal (with g++), navigate to the build directory,
+To build run the commend:
+
+g++ Builder.cpp Main.cpp -o builder -lsfml-graphics -lsfml-window -lsfml-system
+
+And run with the commend:
+./builder
