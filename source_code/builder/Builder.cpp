@@ -440,7 +440,7 @@ void LevelBuilder::create_file()
         return;
     }
 
-    std::string path = "levels/" + name + ".txt";
+    std::string path = "../../levels/" + name + ".txt";
     bool was = std::filesystem::exists(path);
     
     std::ofstream level_file(path);
