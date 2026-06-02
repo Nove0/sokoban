@@ -19,7 +19,7 @@ Each directory has its own file explaining how to **build and run** the applicat
 - Push the boxes to the **targets**.  
 
 ### **Level Builder**  
-- Increase/decrease board size with **Up/Down Arrow Keys**.  
+- Increase/decrease board size with **Up/Down Arrow Keys the mouse wheel**.  
 - Load a level to edit with **L**.  
 - Save a level with **S**, then type a number to name it.  
 - Saved levels can be played in the game.  
