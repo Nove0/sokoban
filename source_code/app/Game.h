@@ -12,7 +12,7 @@ class Game
 	std::vector<std::vector<int>> board;
 	std::vector<IntVec2> targets;
 
-	int level = 0;
+	int current_level_index = 0;
 	int box_count = 0;
 
 	IntVec2 player_position;
@@ -55,7 +55,13 @@ class Game
 	void load_data_of_level();
 	void set_level(int level);
 
+    bool is_numeric(const std::string &str);
+
+    void update_existing_levels();
+	std::vector<int> existing_levels;
+	
 	void reset(bool total = false);
+
 
 public:
 	Game(int window_size);

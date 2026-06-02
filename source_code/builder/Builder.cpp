@@ -31,6 +31,17 @@ void LevelBuilder::input()
         {
             game_over = true;
         }
+        if (event.type == sf::Event::MouseWheelScrolled && event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+        {
+            if(event.mouseWheelScroll.delta > 0.0f && board_size < MAX_BOARD_SIZE)
+            {
+                resize_board(board_size + 1);
+            }
+            else if(event.mouseWheelScroll.delta <0.0f && board_size > MIN_BOARD_SIZE)
+            {
+                resize_board(board_size - 1);
+            }
+        }
         if (event.type == sf::Event::KeyPressed)
         {
             if (event.key.code == sf::Keyboard::Up)
@@ -47,9 +58,14 @@ void LevelBuilder::input()
             }
             else if (event.key.code == sf::Keyboard::S)
             {
-                if(conform_level_ok())
+                std::string confirm = conform_level_ok();
+                if(confirm == "T")
                 {
                     create_file();
+                }
+                else if(confirm != "F")
+                {
+                    create_file(confirm);
                 }
             }
             else if (event.key.code == sf::Keyboard::L)
@@ -430,9 +446,9 @@ std::string LevelBuilder::generate_level_str()
     return text;
 }
 
-void LevelBuilder::create_file()
+void LevelBuilder::create_file(const std::string& possible_filename)
 {
-    std::string name = aks_for_str("Save this level as:");
+    std::string name = possible_filename == "NONE"? aks_for_str("Save this level as:") : possible_filename;
 
     if (!all_digits(name))
     {
@@ -443,6 +459,11 @@ void LevelBuilder::create_file()
     std::string path = "../../levels/" + name + ".txt";
     bool was = std::filesystem::exists(path);
     
+    if(was)
+    {
+        bool to_continue = !aks_for_str("Level " + name + " already exist.\ndo you want to overwrite it? (anything for yes, 'empty' for no)").empty();
+        if(!to_continue) return;
+    }
     std::ofstream level_file(path);
     if (level_file)
     {
@@ -484,7 +505,7 @@ std::string LevelBuilder::aks_for_str(const std::string& prompt_text)
     prompt.setFillColor(sf::Color::White);
 
     sf::Text user_input("", font, 24);
-    user_input.setPosition(50, 100);
+    user_input.setPosition(50, 100 + prompt.getGlobalBounds().height);
     user_input.setFillColor(sf::Color::White);
 
     std::string input;
@@ -604,7 +625,7 @@ void LevelBuilder::ask_and_load_from_file()
     load_data_of_level(name);
 }
 
-bool LevelBuilder::conform_level_ok()
+std::string LevelBuilder::conform_level_ok()
 {
     int amount_of_targets = targets.size();
     int amount_of_boxes = 0;
@@ -621,15 +642,16 @@ bool LevelBuilder::conform_level_ok()
 
     if(amount_of_boxes == amount_of_targets)
     {
-        return true;
+        return "T";
     }
 
 
     std::string prompt = "There are more ";
-    prompt += amount_of_boxes > amount_of_targets ? "boxes that targets" : "targets than boxes";
-    prompt += "(" + std::to_string(amount_of_boxes) + ", " + std::to_string(amount_of_targets) + ").\n";
-    prompt += "Would you like to create level anyway? (y or n)";
+    prompt += amount_of_boxes > amount_of_targets ? "boxes than targets" : "targets than boxes";
+    prompt += "(" + std::to_string(std::max(amount_of_boxes, amount_of_targets)) + ", " + std::to_string(std::min(amount_of_boxes, amount_of_targets)) + ").\n";
+    prompt += "Would you like to create level anyway?\n";
+    prompt += "For yes - choose the level number. for no - press enter";
     std::string ans = aks_for_str(prompt);
-    return !ans.empty() && (ans[0] == 'y' || ans[0] == 'Y');
+    return ans.empty() ? "F" : ans;
     
 }

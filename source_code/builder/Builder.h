@@ -11,6 +11,8 @@ class LevelBuilder
     const int GREED_SIZE = 200;
 	const int ITEMS = 4;
 	const int ITEM_SIZE_Y = WINDOW_SIZE / ITEMS;
+	const int MAX_BOARD_SIZE = 100;
+	const int MIN_BOARD_SIZE = 3;
 
 	int dragging = -1;
 	IntVec2 dragging_from = {-1, -1};
@@ -62,14 +64,15 @@ class LevelBuilder
 	int index_of(const IntVec2& index);
 
 	std::string generate_level_str();
-	void create_file();
+	void create_file(const std::string& possible_filename = "NONE");
 	bool all_digits(const std::string& str);
 
 	std::string aks_for_str(const std::string& promp);
 	void load_data_of_level(const std::string& level);
 	void ask_and_load_from_file();
 
-	bool conform_level_ok();
+	// returns T for level is fine, F for do not create and a number for the user's choice (create)
+	std::string conform_level_ok();
 public:
 	LevelBuilder(int window_size);
 	void play();

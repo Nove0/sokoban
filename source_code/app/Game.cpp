@@ -1,11 +1,11 @@
 #include "Game.h"
 #include "Images.h"
-#include "../builder/Builder.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <thread>
 #include <chrono>
+#include <filesystem>
 
 Game::Game(int window_size) :
 	WINDOW_SIZE(window_size),
@@ -13,7 +13,7 @@ Game::Game(int window_size) :
 {
 	window.setFramerateLimit(60);
 	Images::load_data();
-	level = get_current_level();
+	current_level_index = get_current_level();
 	load_data_of_level();
 }
 
@@ -259,7 +259,7 @@ Vec2 Game::get_position_by_index(const IntVec2& index)
 
 void Game::level_up()
 {
-	set_level(level + 1);
+	set_level(current_level_index + 1);
 	load_data_of_level();
 }
 
@@ -283,10 +283,11 @@ int Game::get_current_level()
 
 void Game::load_data_of_level()
 {
-	std::string file_path = "../../levels/" + std::to_string(level) + ".txt";
+	update_existing_levels();
+	std::string file_path = "../../levels/" + std::to_string(existing_levels[current_level_index]) + ".txt";
     std::ifstream file(file_path);
     if (!file.is_open()) {
-		std::cerr << "Error: Unable to open file of level " << level << std::endl;
+		std::cerr << "Error: Unable to open file of level " << current_level_index << std::endl;
         std::exit(1);
     }
     
@@ -331,27 +332,52 @@ void Game::load_data_of_level()
     }
 
     file.close();
+
+	std::cout << "level: " << file_path << " (" << existing_levels[current_level_index] << ")\n";  
 }
 
 void Game::set_level(int level)
 {
-	std::ofstream file("levels/level.txt");
-	this->level = level;
+	if(level >= existing_levels.size()) return;
+	std::ofstream file("../../levels/level.txt");
+	if(!file) exit(1);
+	this->current_level_index = level;
 	file.clear();
 	std::string text = "\n\nlevel writing format:\n\tBoard_size: width\n\tPlayer_starting_index: x y\n\tBoxes_indexes: x y , x y ...\n\tTargets_indexes: x y , x y ...\n\tWalls_indexes: x y , x y ...";
 
-	file << "current_level: " + std::to_string(level);
+	file << "current_level_index: " + std::to_string(level) + " (" + std::to_string(existing_lleveevels[level]) + ")";
 	file << text;
 	file.close();
+}
+
+bool Game::is_numeric(const std::string& str) {
+    if (str.empty()) return false;
+    return std::all_of(str.begin(), str.end(), [](unsigned char c) { 
+        return std::isdigit(c); 
+    });
+}
+
+void Game::update_existing_levels()
+{
+	existing_levels.clear();
+	for(const auto& file: std::filesystem::directory_iterator("../../levels"))
+	{
+		if(file.is_regular_file())
+		{
+			std::string name = file.path().stem().string();
+			if(is_numeric(name)) existing_levels.push_back(std::stoi(name));
+		}
+	}
+	std::sort(existing_levels.begin(), existing_levels.end());
 }
 
 void Game::reset(bool total)
 {
 	if(total)
 	{
-		level = 1;
+		current_level_index = 0;
 	}
-	set_level(level);
+	set_level(current_level_index);
 	load_data_of_level();
 }
 
