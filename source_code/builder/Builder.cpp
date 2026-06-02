@@ -119,7 +119,7 @@ void LevelBuilder::draw_boxes()
         {
             if (board[x][y] == 2)  
             {
-                draw_square_at_index(Vec2(x, y), 2);
+                draw_square_at_index(IntVec2(x, y), 2);
             }
         }
     }
@@ -142,7 +142,7 @@ void LevelBuilder::draw_walls()
         {
             if (board[x][y] == 1)
             {
-                draw_square_at_index(Vec2(x, y), 1);
+                draw_square_at_index(IntVec2(x, y), 1);
             }
         }
     }
@@ -171,7 +171,7 @@ void LevelBuilder::draw_background()
     {
         for (int y = 0; y < board_size; y++)
         {
-            draw_square_at_index(Vec2(x, y), 3, 128);
+            draw_square_at_index(IntVec2(x, y), 3, 128);
         }
     }
 }
@@ -208,7 +208,7 @@ void LevelBuilder::handle_press()
         return;
     }
 
-    Vec2 index = get_index_by_position(mouse_position);
+    IntVec2 index = get_index_by_position(mouse_position);
     if (index.x < 0 || index.x >= board_size || index.y < 0 || index.y >= board_size)
     {
         return;
@@ -239,7 +239,7 @@ void LevelBuilder::handle_release()
 {
     if (dragging < 0) return;
 
-    Vec2 index = get_index_by_position(mouse_position);
+    IntVec2 index = get_index_by_position(mouse_position);
 
     if (index.x < 0 || index.x >= board_size || index.y < 0 || index.y >= board_size)
     {
@@ -297,7 +297,7 @@ void LevelBuilder::handle_greed_press()
 
 void LevelBuilder::handle_right_press()
 {
-    Vec2 index = get_index_by_position(mouse_position);
+    IntVec2 index = get_index_by_position(mouse_position);
     if(index.x < 0 || index.x >= board_size || index.y < 0 || index.y >= board_size)
     {
         return;
@@ -323,7 +323,7 @@ void LevelBuilder::resize_board(int new_size)
     player_position = {0, 0};  // Reset player position
 }
 
-void LevelBuilder::draw_square_at_index(const Vec2& index, int type, int alpha)
+void LevelBuilder::draw_square_at_index(const IntVec2& index, int type, int alpha)
 {
     if (index.x < 0 || index.x >= board_size || index.y < 0 || index.y >= board_size) {
         return;  // Ensure valid index before drawing
@@ -343,19 +343,19 @@ void LevelBuilder::draw_square_at_position(const Vec2 &position, int type, int a
     window.draw(sprite);
 }
 
-Vec2 LevelBuilder::get_position_by_index(const Vec2& index)
+Vec2 LevelBuilder::get_position_by_index(const IntVec2& index)
 {
     return Vec2(index.x * square_size, index.y * square_size);
 }
 
-Vec2 LevelBuilder::get_index_by_position(const sf::Vector2f& position)
+IntVec2 LevelBuilder::get_index_by_position(const sf::Vector2f& position)
 {
     int x = position.x / square_size;
     int y = position.y / square_size;
     if (x < 0 || x >= board_size || y < 0 || y >= board_size) {
-        return Vec2(-1, -1);  // Return an invalid index if out of bounds
+        return IntVec2(-1, -1);  // Return an invalid index if out of bounds
     }
-    return Vec2(x, y);
+    return IntVec2(x, y);
 }
 
 void LevelBuilder::reset()
@@ -363,12 +363,12 @@ void LevelBuilder::reset()
     resize_board(board_size);  // Reset board to current size
 }
 
-bool LevelBuilder::found_in_target(const Vec2 &index)
+bool LevelBuilder::found_in_target(const IntVec2 &index)
 {
     return index_of(index) != -1;
 }
 
-int LevelBuilder::index_of(const Vec2 &index)
+int LevelBuilder::index_of(const IntVec2 &index)
 {
     for (int i = 0; i < targets.size(); i++)
     {    
@@ -582,7 +582,7 @@ void LevelBuilder::load_data_of_level(const std::string& level)
     file >> documentation;
     while (file >> x >> y)
     {
-        targets.push_back(Vec2(x, y));
+        targets.push_back(IntVec2(x, y));
         if (file.peek() == '\n') break;
         file >> comma;
     }

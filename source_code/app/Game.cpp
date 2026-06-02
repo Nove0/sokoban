@@ -98,7 +98,7 @@ void Game::draw_boxes()
 		{
 			if(board[x][y] == 2)
 			{
-				draw_square_at_index(Vec2(x, y), 2);
+				draw_square_at_index(IntVec2(x, y), 2);
 			}
 		}
 	}
@@ -121,7 +121,7 @@ void Game::draw_walls()
 		{
 			if(board[x][y] == 1)
 			{
-				draw_square_at_index(Vec2(x, y), 1);
+				draw_square_at_index(IntVec2(x, y), 1);
 			}
 		}
 	}
@@ -151,14 +151,14 @@ void Game::draw_background()
 	{
 		for(int y = 0; y < board_size; y++)
 		{
-			draw_square_at_index(Vec2(x, y), 3, 128);
+			draw_square_at_index(IntVec2(x, y), 3, 128);
 		}
 	}
 }
 
-void Game::draw_square_at_index(const Vec2 &index, int type, int alpha)
+void Game::draw_square_at_index(const IntVec2 &index, int type, int alpha)
 {
-	Vec2 square_position = get_position_by_index(Vec2(index.x, index.y));
+	Vec2 square_position = get_position_by_index(IntVec2(index.x, index.y));
 	sf::Sprite sprite = Images::get_image(type, square_size, square_size);
 	sprite.setColor(sf::Color(255, 255, 255, alpha));
 	sprite.setPosition(square_position.x, square_position.y);
@@ -168,7 +168,7 @@ void Game::draw_square_at_index(const Vec2 &index, int type, int alpha)
 bool Game::move_player_x(bool to_right)
 {
 	int direction = to_right ? 1 : -1;
-	Vec2 res_index(player_position.x + direction, player_position.y);
+	IntVec2 res_index(player_position.x + direction, player_position.y);
 
 	move_box(true, direction, res_index);
 
@@ -184,7 +184,7 @@ bool Game::move_player_x(bool to_right)
 bool Game::move_player_y(bool to_up)
 {
 	int direction = to_up ? -1: 1;
-	Vec2 res_index(player_position.x, player_position.y + direction);
+	IntVec2 res_index(player_position.x, player_position.y + direction);
 
 	move_box(false, direction, res_index);
 
@@ -197,7 +197,7 @@ bool Game::move_player_y(bool to_up)
 	return true;
 }
 
-void Game::move_box(bool x_axis, int direction, const Vec2& box_index)
+void Game::move_box(bool x_axis, int direction, const IntVec2& box_index)
 {
     if(box_index.x < 0 || box_index.x >= board_size || box_index.y < 0 || box_index.y >= board_size || board[box_index.x][box_index.y] != 2)
     {
@@ -206,7 +206,7 @@ void Game::move_box(bool x_axis, int direction, const Vec2& box_index)
 
     if(x_axis) 
     {
-        Vec2 res_index = Vec2(box_index.x + direction, box_index.y);
+        IntVec2 res_index = IntVec2(box_index.x + direction, box_index.y);
         if(can_be_at(res_index))
         {
             place_at(res_index, 2);
@@ -215,7 +215,7 @@ void Game::move_box(bool x_axis, int direction, const Vec2& box_index)
     }
     else 
     {
-        Vec2 res_index = Vec2(box_index.x, box_index.y + direction);
+        IntVec2 res_index = IntVec2(box_index.x, box_index.y + direction);
         if(can_be_at(res_index))
         {
             place_at(res_index, 2);
@@ -224,12 +224,12 @@ void Game::move_box(bool x_axis, int direction, const Vec2& box_index)
     }
 }
 
-void Game::place_at(const Vec2 &index, int value)
+void Game::place_at(const IntVec2 &index, int value)
 {
 	board[index.x][index.y] = value;
 }
 
-bool Game::can_be_at(const Vec2 &index)
+bool Game::can_be_at(const IntVec2 &index)
 {
     return index.x >= 0 && index.x < board_size &&
            index.y >= 0 && index.y < board_size && 
@@ -238,17 +238,20 @@ bool Game::can_be_at(const Vec2 &index)
 
 bool Game::check_win()
 {
+	// returning false when a target is empty will save time
+	// but it will not catch a win when there are more targets than boxes.
+	int correct_count = 0;
 	for(auto index: targets)
 	{
-		if(board[index.x][index.y] != 2)
+		if(board[index.x][index.y] == 2)
 		{
-			return false;
+			++correct_count;
 		}
 	}
-    return true;
+    return correct_count == std::min((size_t)box_count, targets.size());
 }
 
-Vec2 Game::get_position_by_index(const Vec2& index)
+Vec2 Game::get_position_by_index(const IntVec2& index)
 {
 	return Vec2(index.x * square_size, index.y * square_size);
 }
@@ -279,17 +282,17 @@ int Game::get_current_level()
 
 void Game::load_data_of_level()
 {
-    std::string file_path = "../../levels/" + std::to_string(level) + ".txt";
+	std::string file_path = "../../levels/" + std::to_string(level) + ".txt";
     std::ifstream file(file_path);
     if (!file.is_open()) {
-        std::cerr << "Error: Unable to open file of level " << level << std::endl;
+		std::cerr << "Error: Unable to open file of level " << level << std::endl;
         std::exit(1);
     }
     
     std::string documentation;
     std::string comma;
     int x, y;
-
+	
     file >> documentation >> board_size;
 	square_size = WINDOW_SIZE / (float)board_size;
     
@@ -299,19 +302,21 @@ void Game::load_data_of_level()
     file >> documentation >> player_position.x >> player_position.y; 
 
 	// Boxes: 
+	box_count = 0;
     file >> documentation;
     while (file >> x >> y) {
         board[x][y] = 2;
+		++box_count;
         if (file.peek() == '\n') break;
 		file >> comma;
     }
 
-	targets.clear();
 	// Targets: 
+	targets.clear();
 	file >> documentation;
 	while(file >> x >> y)
 	{
-		targets.push_back(Vec2(x, y));
+		targets.push_back(IntVec2(x, y));
 		if (file.peek() == '\n') break;
 		file >> comma;
 	}

@@ -13,12 +13,12 @@ class LevelBuilder
 	const int ITEM_SIZE_Y = WINDOW_SIZE / ITEMS;
 
 	int dragging = -1;
-	Vec2 dragging_from = {-1, -1};
+	IntVec2 dragging_from = {-1, -1};
 
 	std::vector<std::vector<int>> board;
-	std::vector<Vec2> targets;
+	std::vector<IntVec2> targets;
 
-	Vec2 player_position;
+	IntVec2 player_position;
 	sf::RenderWindow window;
 
 	sf::Font font;
@@ -50,16 +50,16 @@ class LevelBuilder
 
 	void resize_board(int new_size);
 
-	void draw_square_at_index(const Vec2& index, int type, int alpha = 255);
+	void draw_square_at_index(const IntVec2& index, int type, int alpha = 255);
 	void draw_square_at_position(const Vec2& position, int type, int alpha, int size_x, int size_y, bool center = false);
 
-	Vec2 get_position_by_index(const Vec2& index);
-	Vec2 get_index_by_position(const sf::Vector2f& position);
+	Vec2 get_position_by_index(const IntVec2& index);
+	IntVec2 get_index_by_position(const sf::Vector2f& position);
 
     void reset();
 
-	bool found_in_target(const Vec2& index);
-	int index_of(const Vec2& index);
+	bool found_in_target(const IntVec2& index);
+	int index_of(const IntVec2& index);
 
 	std::string generate_level_str();
 	void create_file();

@@ -10,11 +10,12 @@ class Game
 	float square_size;
 	const int WINDOW_SIZE;
 	std::vector<std::vector<int>> board;
-	std::vector<Vec2> targets;
+	std::vector<IntVec2> targets;
 
-	int level;
+	int level = 0;
+	int box_count = 0;
 
-	Vec2 player_position;
+	IntVec2 player_position;
 	sf::RenderWindow window;
 
 	bool game_over = false;
@@ -34,18 +35,18 @@ class Game
 	void draw_walls();
 	void draw_background();
 	
-	void draw_square_at_index(const Vec2& index, int type, int alpha = 255);
+	void draw_square_at_index(const IntVec2& index, int type, int alpha = 255);
 
 	// Logic:
 	bool move_player_x(bool to_right);
 	bool move_player_y(bool to_up);
 
-	void move_box(bool x_axis, int direction, const Vec2& box_index);
+	void move_box(bool x_axis, int direction, const IntVec2& box_index);
 
-	void place_at(const Vec2& index, int value);
-	bool can_be_at(const Vec2& index);
+	void place_at(const IntVec2& index, int value);
+	bool can_be_at(const IntVec2& index);
 
-	Vec2 get_position_by_index(const Vec2& index);
+	Vec2 get_position_by_index(const IntVec2& index);
 
 	bool check_win();
 	void level_up();
