@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Images.h"
+#include "../builder/Builder.h"
 #include <iostream>
 #include <fstream>
 #include <string>
