@@ -28,5 +28,4 @@ Each directory has its own file explaining how to **build and run** the applicat
 
 Didn't spend too much time polishing this, so there are some rough edges:  
 
-- **Floating points instead of integers(fixed!)** – Should probably be using integers everywhere, but right now there are floating-point values in places where they’re not really needed. 
 - **Graphics alignment** – If the square size isn’t a clean divisor of the window size (or the other way around), things don’t always align properly.  
