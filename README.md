@@ -23,9 +23,3 @@ Each directory has its own file explaining how to **build and run** the applicat
 - Load a level to edit with **L**.  
 - Save a level with **S**, then type a number to name it.  
 - Saved levels can be played in the game.  
-
-## Issues & Things That Could Be Improved  
-
-Didn't spend too much time polishing this, so there are some rough edges:  
-
-- **Graphics alignment** – If the square size isn’t a clean divisor of the window size (or the other way around), things don’t always align properly.  
