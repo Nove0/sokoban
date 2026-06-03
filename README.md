@@ -23,4 +23,4 @@ Each directory has its own file explaining how to **build and run** the applicat
 - Load a level to edit with **L**.  
 - Save a level with **S**, then type a number to name it.  
 - Saved levels can be played in the game.  
-- You can have Level Builder and App work simultaneity.
+- You can have Level Builder and the Game work simultaneity.
