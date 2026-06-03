@@ -345,7 +345,7 @@ void Game::set_level(int level)
 	file.clear();
 	std::string text = "\n\nlevel writing format:\n\tBoard_size: width\n\tPlayer_starting_index: x y\n\tBoxes_indexes: x y , x y ...\n\tTargets_indexes: x y , x y ...\n\tWalls_indexes: x y , x y ...";
 
-	file << "current_level_index: " + std::to_string(level) + " (" + std::to_string(existing_lleveevels[level]) + ")";
+	file << "current_level_index: " + std::to_string(level) + " (" + std::to_string(existing_levels[level]) + ")";
 	file << text;
 	file.close();
 }
