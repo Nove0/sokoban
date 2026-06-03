@@ -11,6 +11,7 @@ Game::Game(int window_size) :
 	WINDOW_SIZE(window_size),
 	window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Cool Game")
 {
+	player_diraction = Images::PLAYER_DIRACTION::NONE;
 	window.setFramerateLimit(60);
 	Images::load_data();
 	current_level_index = get_current_level();
@@ -31,18 +32,22 @@ void Game::input()
 			if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)
 			{
 				move_player_x(true);
+				player_diraction = Images::PLAYER_DIRACTION::RIGHT;
 			}
 			else if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A) 
 			{
 				move_player_x(false);
+				player_diraction = Images::PLAYER_DIRACTION::LEFT;
 			}
 			else if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)
 			{
 				move_player_y(true);
+				player_diraction = Images::PLAYER_DIRACTION::UP;
 			}
 			else if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)
 			{
 				move_player_y(false);
+				player_diraction = Images::PLAYER_DIRACTION::DOWN;
 			}
 			else if(event.key.code == sf::Keyboard::R)
 			{
@@ -160,7 +165,7 @@ void Game::draw_background()
 void Game::draw_square_at_index(const IntVec2 &index, int type, int alpha)
 {
 	Vec2 square_position = get_position_by_index(IntVec2(index.x, index.y));
-	sf::Sprite sprite = Images::get_image(type, square_size, square_size);
+	sf::Sprite sprite = Images::get_image(type, square_size, square_size, player_diraction);
 	sprite.setColor(sf::Color(255, 255, 255, alpha));
 	sprite.setPosition(square_position.x, square_position.y);
 	window.draw(sprite);
@@ -302,6 +307,7 @@ void Game::load_data_of_level()
     board.resize(board_size, std::vector<int>(board_size, 0));
 
     file >> documentation >> player_position.x >> player_position.y; 
+	player_diraction = Images::PLAYER_DIRACTION::NONE;
 
 	// Boxes: 
 	box_count = 0;

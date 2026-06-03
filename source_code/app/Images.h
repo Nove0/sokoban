@@ -4,7 +4,7 @@
 class Images
 {
     static sf::Texture box_image;
-    static sf::Texture player_image;
+    static sf::Texture player_animation;
     static sf::Texture wall_image;
     static sf::Texture back_image;
     static sf::Texture target_image;
@@ -13,7 +13,7 @@ class Images
 
     static void resize_sprite(sf::Sprite& sprite, int x, int y) 
     {
-        sf::FloatRect original_size = sprite.getGlobalBounds();
+        sf::FloatRect original_size = sprite.getLocalBounds();
 
         float scaleX = static_cast<float>(x) / original_size.width;
         float scaleY = static_cast<float>(y) / original_size.height;
@@ -27,7 +27,7 @@ public:
         if (loaded) return;
 
         if (!box_image.loadFromFile("../../images/box_image.png") ||
-            !player_image.loadFromFile("../../images/player_image.png") ||
+            !player_animation.loadFromFile("../../images/player_animation.png") ||
             !wall_image.loadFromFile("../../images/wall_image.jpg") ||
             !back_image.loadFromFile("../../images/back_image.png") ||
             !target_image.loadFromFile("../../images/x_image.png"))
@@ -37,7 +37,7 @@ public:
         }
 
         box_image.setSmooth(true);
-        player_image.setSmooth(true);
+        player_animation.setSmooth(true);
         wall_image.setSmooth(true);
         back_image.setSmooth(true);
         target_image.setSmooth(true);
@@ -45,7 +45,18 @@ public:
         loaded = true;
     }
 
-    static sf::Sprite get_image(int type, int width, int height)
+    enum PLAYER_DIRACTION: int
+    {
+        NONE,
+        UP,
+        DOWN,
+        RIGHT,
+        LEFT
+    };
+
+    const static int PLAYER_IMAGE_SIZE = 100;
+
+    static sf::Sprite get_image(int type, int width, int height, int player_diraction = NONE)
     {
         if (!loaded)
         {
@@ -70,9 +81,25 @@ public:
         {
             sprite.setTexture(target_image);
         }
-        else
+        else if(type == 0)
         {
-            sprite.setTexture(player_image);
+            sprite.setTexture(player_animation);
+            if(player_diraction == NONE || player_diraction == DOWN)
+            {
+                sprite.setTextureRect(sf::IntRect(0, 0, PLAYER_IMAGE_SIZE, PLAYER_IMAGE_SIZE));
+            }
+            if(player_diraction == RIGHT)
+            {
+                sprite.setTextureRect(sf::IntRect(PLAYER_IMAGE_SIZE, 0, PLAYER_IMAGE_SIZE, PLAYER_IMAGE_SIZE));
+            }
+            if(player_diraction == LEFT)
+            {
+                sprite.setTextureRect(sf::IntRect(PLAYER_IMAGE_SIZE * 2, 0, -PLAYER_IMAGE_SIZE, PLAYER_IMAGE_SIZE));
+            }
+            if(player_diraction == UP)
+            {
+                sprite.setTextureRect(sf::IntRect(PLAYER_IMAGE_SIZE * 2, 0, PLAYER_IMAGE_SIZE, PLAYER_IMAGE_SIZE));
+            }
         }
 
         resize_sprite(sprite, width, height);
@@ -83,7 +110,7 @@ public:
 // Static variable definitions
 bool Images::loaded = false;
 sf::Texture Images::box_image;
-sf::Texture Images::player_image;
+sf::Texture Images::player_animation;
 sf::Texture Images::wall_image;
 sf::Texture Images::back_image;
 sf::Texture Images::target_image;

@@ -15,6 +15,7 @@ class Game
 	int current_level_index = 0;
 	int box_count = 0;
 
+	int player_diraction;
 	IntVec2 player_position;
 	sf::RenderWindow window;
 
