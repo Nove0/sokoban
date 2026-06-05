@@ -51,10 +51,11 @@ class Game
 
 	bool check_win();
 	void level_up();
+	void go_to_level(int level);
 
 	int get_current_level();
 	void load_data_of_level();
-	void set_level(int level);
+	bool set_level(int level);
 
     bool is_numeric(const std::string &str);
 

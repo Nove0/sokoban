@@ -9,13 +9,13 @@
 
 Game::Game(int window_size) :
 	WINDOW_SIZE(window_size),
-	window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Cool Game")
+	window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "")
 {
 	player_diraction = Images::PLAYER_DIRACTION::NONE;
 	window.setFramerateLimit(60);
 	Images::load_data();
 	current_level_index = get_current_level();
-	load_data_of_level();
+	go_to_level(current_level_index);
 }
 
 void Game::input()
@@ -56,6 +56,14 @@ void Game::input()
 			else if(event.key.code == sf::Keyboard::T)
 			{
 				reset(true);
+			}
+			else if(event.key.code == sf::Keyboard::N)
+			{
+				level_up();
+			}
+			else if(event.key.code == sf::Keyboard::B)
+			{
+				go_to_level(current_level_index - 1);
 			}
 		}
 	}
@@ -264,8 +272,16 @@ Vec2 Game::get_position_by_index(const IntVec2& index)
 
 void Game::level_up()
 {
-	set_level(current_level_index + 1);
+	go_to_level(current_level_index + 1);
+}
+
+void Game::go_to_level(int level)
+{
+	if(!set_level(level)) return;
 	load_data_of_level();
+
+	std::string end_title = (level == existing_levels.size() - 1 )? "last" : std::to_string(level);
+	window.setTitle("Level: " + std::to_string(existing_levels[current_level_index]) + " (" + end_title + ")");
 }
 
 int Game::get_current_level()
@@ -339,12 +355,12 @@ void Game::load_data_of_level()
 
     file.close();
 
-	std::cout << "level: " << file_path << " (" << existing_levels[current_level_index] << ")\n";  
 }
 
-void Game::set_level(int level)
+bool Game::set_level(int level)
 {
-	if(level >= existing_levels.size()) return;
+	update_existing_levels();
+	if(level >= existing_levels.size() || level < 0) return false;
 	std::ofstream file("../../levels/level.txt");
 	if(!file) exit(1);
 	this->current_level_index = level;
@@ -354,6 +370,7 @@ void Game::set_level(int level)
 	file << "current_level_index: " + std::to_string(level) + " (" + std::to_string(existing_levels[level]) + ")";
 	file << text;
 	file.close();
+	return true;
 }
 
 bool Game::is_numeric(const std::string& str) {
@@ -379,12 +396,7 @@ void Game::update_existing_levels()
 
 void Game::reset(bool total)
 {
-	if(total)
-	{
-		current_level_index = 0;
-	}
-	set_level(current_level_index);
-	load_data_of_level();
+	go_to_level(total ? 0 : current_level_index);
 }
 
 void Game::play()
